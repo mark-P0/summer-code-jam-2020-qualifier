@@ -15,23 +15,32 @@ Important notes for submission:
 """
 
 import datetime
-import typing
+import typing as T
 from string import ascii_lowercase, whitespace
+
+
+class ArticleArgs(T.TypedDict):
+    title: str
+    content: str
+    author: str
+    publication_date: datetime.datetime
 
 
 class END:
     """
     Empty "mixin" that removes `kwargs` from the inheritance chain
+
+    Needed because at the end of the inheritance chain, it is assumed that all arguments are consumed
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: T.Unpack[ArticleArgs]):
         super().__init__()  # Remove `kwargs` from chain
 
 
 class ArticleField:
     """The `ArticleField` class for the Advanced Requirements."""
 
-    def __init__(self, field_type: typing.Type[typing.Any]):
+    def __init__(self, field_type: T.Type[T.Any]):
         self.field_type = field_type
 
         self._instances = {}
@@ -65,10 +74,10 @@ class ArticleField:
 class ArticleID:
     _instances = []
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: T.Unpack[ArticleArgs]):
         self.__class__._instances.append(self)
 
-        super().__init__(**kwargs)
+        super().__init__(**T.cast(T.Any, kwargs))
 
     @property
     def id(self):
@@ -76,11 +85,11 @@ class ArticleID:
 
 
 class ArticleContent:
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: T.Unpack[ArticleArgs]):
         self._content = kwargs["content"]
         self.last_edited = None
 
-        super().__init__(**kwargs)
+        super().__init__(**T.cast(T.Any, kwargs))
 
     def __len__(self):
         return len(self._content)
@@ -96,10 +105,10 @@ class ArticleContent:
 
 
 class ArticlePublicationDate:
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: T.Unpack[ArticleArgs]):
         self.publication_date = kwargs["publication_date"]
 
-        super().__init__(**kwargs)
+        super().__init__(**T.cast(T.Any, kwargs))
 
     def __lt__(self, other):
         return self.publication_date < other.publication_date
@@ -119,11 +128,11 @@ class ArticlePublicationDate:
 
 
 class ArticleRepresentation(ArticlePublicationDate):
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: T.Unpack[ArticleArgs]):
         self.title = kwargs["title"]
         self.author = kwargs["author"]
 
-        super().__init__(**kwargs)
+        super().__init__(**T.cast(T.Any, kwargs))
 
     def __repr__(self):
         title = self.title
@@ -187,6 +196,10 @@ class ArticleCommonWords(ArticleContent):
 class Article(
     ArticleCommonWords, ArticleRepresentation, ArticleIntroduction, ArticleID, END
 ):
-    """The `Article` class you need to write for the qualifier."""
+    """
+    The `Article` class you need to write for the qualifier.
+
+    Uses a "middleware-like" inheritance approach. Inheritance list is evaluated in order as written
+    """
 
     attribute = ArticleField(field_type=int)
