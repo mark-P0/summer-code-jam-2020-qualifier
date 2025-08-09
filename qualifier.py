@@ -109,21 +109,12 @@ class ArticlePublicationDate:
         return datetime.datetime.isoformat(self.publication_date)
 
 
-class Article(ArticleID, ArticleContent, ArticlePublicationDate):
-    """The `Article` class you need to write for the qualifier."""
-
-    attribute = ArticleField(field_type=int)
-
-    def __init__(
-        self, title: str, author: str, publication_date: datetime.datetime, content: str
-    ):
+class ArticleRepresentation(ArticlePublicationDate):
+    def __init__(self, title: str, author: str, **kwargs):
         self.title = title
         self.author = author
 
-        super().__init__(
-            publication_date=publication_date,
-            content=content,
-        )
+        super().__init__(**kwargs)
 
     def __repr__(self):
         title = self.title
@@ -138,6 +129,22 @@ class Article(ArticleID, ArticleContent, ArticlePublicationDate):
         publication_date = self.publication_date_iso
 
         return hash((title, author, publication_date))
+
+
+class Article(ArticleRepresentation, ArticleContent, ArticleID):
+    """The `Article` class you need to write for the qualifier."""
+
+    attribute = ArticleField(field_type=int)
+
+    def __init__(
+        self, title: str, author: str, publication_date: datetime.datetime, content: str
+    ):
+        super().__init__(
+            title=title,
+            author=author,
+            publication_date=publication_date,
+            content=content,
+        )
 
     def short_introduction(self, n_characters: int):
         intro = self.content[:n_characters]
