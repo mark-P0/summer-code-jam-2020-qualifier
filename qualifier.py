@@ -16,6 +16,7 @@ Important notes for submission:
 
 import datetime
 import typing
+from string import ascii_lowercase, whitespace
 
 
 class ArticleField:
@@ -59,3 +60,22 @@ class Article:
         intro = intro.strip()
 
         return intro
+
+    def most_common_words(self, n_words: int):
+        normalized_content = "".join(
+            char
+            if (char in ascii_lowercase) or (char in whitespace)
+            else " "  # Non-alphabet characters count as a whitespace
+            for char in self.content.lower()
+        )
+
+        words = normalized_content.split()
+        word_ct_map: dict[str, int] = {}
+        for word in words:
+            ct = word_ct_map.get(word, 0)
+            word_ct_map[word] = ct + 1
+
+        sorted_ct = sorted(word_ct_map.items(), key=lambda item: item[1], reverse=True)
+        sliced_ct = sorted_ct[:n_words]
+
+        return dict(sliced_ct)
