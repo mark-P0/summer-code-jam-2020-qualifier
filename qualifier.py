@@ -147,11 +147,7 @@ class ArticleIntroduction(ArticleContent):
         return intro
 
 
-class Article(ArticleRepresentation, ArticleIntroduction, ArticleID):
-    """The `Article` class you need to write for the qualifier."""
-
-    attribute = ArticleField(field_type=int)
-
+class ArticleCommonWords(ArticleContent):
     def most_common_words(self, n_words: int):
         normalized_content = "".join(
             char
@@ -170,3 +166,14 @@ class Article(ArticleRepresentation, ArticleIntroduction, ArticleID):
         sliced_ct = sorted_ct[:n_words]
 
         return dict(sliced_ct)
+
+
+class Article(
+    ArticleCommonWords,
+    ArticleRepresentation,
+    ArticleIntroduction,
+    ArticleID,
+):
+    """The `Article` class you need to write for the qualifier."""
+
+    attribute = ArticleField(field_type=int)
