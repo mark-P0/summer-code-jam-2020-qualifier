@@ -35,3 +35,10 @@ class Article:
         self.author = author
         self.publication_date = publication_date
         self.content = content
+
+    def __repr__(self):
+        title = self.title
+        author = self.author
+        publication_date = datetime.datetime.isoformat(self.publication_date)
+
+        return f"<Article {title=} {author=} {publication_date=}>"
