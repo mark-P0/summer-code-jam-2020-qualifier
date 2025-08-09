@@ -45,3 +45,17 @@ class Article:
 
     def __len__(self):
         return len(self.content)
+
+    def short_introduction(self, n_characters: int):
+        intro = self.content[:n_characters]
+
+        words = self.content.split()
+        intro_words = intro.split()
+
+        last_intro_word = intro_words[-1]
+        if last_intro_word not in words:
+            intro = intro.replace(last_intro_word, "")
+
+        intro = intro.strip()
+
+        return intro
