@@ -26,6 +26,7 @@ class ArticleField:
         self.field_type = field_type
 
         self._instances = {}
+        self._name_in_classes = {}
 
     def __get__(self, instance, owner):
         value = self._instances.get(instance, None)
@@ -33,10 +34,23 @@ class ArticleField:
         return value
 
     def __set__(self, instance, value):
-        if not isinstance(value, self.field_type):
-            raise TypeError(f"Expected type is {self.field_type}; got {type(value)}")
+        if isinstance(value, self.field_type):
+            self._instances[instance] = value
 
-        self._instances[instance] = value
+            return
+
+        name = self._name_in_classes.get(instance.__class__, None)
+        if name is None:
+            raise TypeError(
+                f"expected an instance of type '{self.field_type.__name__}', got '{type(value).__name__}' instead"
+            )
+
+        raise TypeError(
+            f"expected an instance of type '{self.field_type.__name__}' for attribute '{name}', got '{type(value).__name__}' instead"
+        )
+
+    def __set_name__(self, owner, name):
+        self._name_in_classes[owner] = name
 
 
 class ArticleID:
