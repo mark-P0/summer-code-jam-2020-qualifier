@@ -19,22 +19,25 @@ import typing as T
 from string import ascii_lowercase, whitespace
 
 
-class ArticleArgs(T.TypedDict):
-    title: str
-    content: str
-    author: str
-    publication_date: datetime.datetime
+TEndKwargs = T.TypeVar("TEndKwargs")
 
 
-class END:
+class EndKwargsMixin(T.Generic[TEndKwargs]):
     """
     Empty "mixin" that removes `kwargs` from the inheritance chain
 
     Needed because at the end of the inheritance chain, it is assumed that all arguments are consumed
     """
 
-    def __init__(self, **kwargs: T.Unpack[ArticleArgs]):
+    def __init__(self, **kwargs: TEndKwargs):
         super().__init__()  # Remove `kwargs` from chain
+
+
+class ArticleKwargs(T.TypedDict):
+    title: str
+    content: str
+    author: str
+    publication_date: datetime.datetime
 
 
 class ArticleField:
@@ -74,7 +77,7 @@ class ArticleField:
 class ArticleID:
     _instances = []
 
-    def __init__(self, **kwargs: T.Unpack[ArticleArgs]):
+    def __init__(self, **kwargs: T.Unpack[ArticleKwargs]):
         self.__class__._instances.append(self)
 
         super().__init__(**T.cast(T.Any, kwargs))
@@ -85,7 +88,7 @@ class ArticleID:
 
 
 class ArticleContent:
-    def __init__(self, **kwargs: T.Unpack[ArticleArgs]):
+    def __init__(self, **kwargs: T.Unpack[ArticleKwargs]):
         self._content = kwargs["content"]
         self.last_edited = None
 
@@ -105,7 +108,7 @@ class ArticleContent:
 
 
 class ArticlePublicationDate:
-    def __init__(self, **kwargs: T.Unpack[ArticleArgs]):
+    def __init__(self, **kwargs: T.Unpack[ArticleKwargs]):
         self.publication_date = kwargs["publication_date"]
 
         super().__init__(**T.cast(T.Any, kwargs))
@@ -128,7 +131,7 @@ class ArticlePublicationDate:
 
 
 class ArticleRepresentation(ArticlePublicationDate):
-    def __init__(self, **kwargs: T.Unpack[ArticleArgs]):
+    def __init__(self, **kwargs: T.Unpack[ArticleKwargs]):
         self.title = kwargs["title"]
         self.author = kwargs["author"]
 
@@ -194,7 +197,11 @@ class ArticleCommonWords(ArticleContent):
 
 
 class Article(
-    ArticleCommonWords, ArticleRepresentation, ArticleIntroduction, ArticleID, END
+    ArticleCommonWords,
+    ArticleRepresentation,
+    ArticleIntroduction,
+    ArticleID,
+    EndKwargsMixin[ArticleKwargs],
 ):
     """
     The `Article` class you need to write for the qualifier.
