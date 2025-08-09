@@ -26,10 +26,25 @@ class ArticleField:
         pass
 
 
+class ArticleID:
+    _instances = []
+
+    def __init__(self, *args, **kwargs):
+        self.__class__._instances.append(self)
+
+        super().__init__(*args, **kwargs)
+
+    @property
+    def id(self):
+        return self.__class__._instances.index(self)
+
+
 class ArticleContent:
-    def __init__(self, *, content: str):
+    def __init__(self, content: str, **kwargs):
         self._content = content
         self.last_edited = None
+
+        super().__init__(**kwargs)
 
     @property
     def content(self):
@@ -42,8 +57,10 @@ class ArticleContent:
 
 
 class ArticlePublicationDate:
-    def __init__(self, *, publication_date=datetime.datetime):
+    def __init__(self, publication_date: datetime.datetime, **kwargs):
         self.publication_date = publication_date
+
+        super().__init__(**kwargs)
 
     def __lt__(self, other):
         return self.publication_date < other.publication_date
@@ -63,26 +80,29 @@ class ArticlePublicationDate:
     def __ge__(self, other):
         return self.publication_date >= other.publication_date
 
+    @property
+    def publication_date_iso(self):
+        return datetime.datetime.isoformat(self.publication_date)
 
-class Article(ArticleContent, ArticlePublicationDate):
+
+class Article(ArticleID, ArticleContent, ArticlePublicationDate):
     """The `Article` class you need to write for the qualifier."""
-
-    _instances = []
 
     def __init__(
         self, title: str, author: str, publication_date: datetime.datetime, content: str
     ):
-        self.__class__._instances.append(self)
-
         self.title = title
         self.author = author
-        self.publication_date = publication_date
-        self._content = content
+
+        super().__init__(
+            publication_date=publication_date,
+            content=content,
+        )
 
     def __repr__(self):
         title = self.title
         author = self.author
-        publication_date = datetime.datetime.isoformat(self.publication_date)
+        publication_date = self.publication_date_iso
 
         return f"<Article {title=} {author=} {publication_date=}>"
 
@@ -121,7 +141,3 @@ class Article(ArticleContent, ArticlePublicationDate):
         sliced_ct = sorted_ct[:n_words]
 
         return dict(sliced_ct)
-
-    @property
-    def id(self):
-        return self.__class__._instances.index(self)
