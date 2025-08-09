@@ -131,11 +131,7 @@ class ArticleRepresentation(ArticlePublicationDate):
         return hash((title, author, publication_date))
 
 
-class Article(ArticleRepresentation, ArticleContent, ArticleID):
-    """The `Article` class you need to write for the qualifier."""
-
-    attribute = ArticleField(field_type=int)
-
+class ArticleIntroduction(ArticleContent):
     def short_introduction(self, n_characters: int):
         intro = self.content[:n_characters]
 
@@ -149,6 +145,12 @@ class Article(ArticleRepresentation, ArticleContent, ArticleID):
         intro = intro.strip()
 
         return intro
+
+
+class Article(ArticleRepresentation, ArticleIntroduction, ArticleID):
+    """The `Article` class you need to write for the qualifier."""
+
+    attribute = ArticleField(field_type=int)
 
     def most_common_words(self, n_words: int):
         normalized_content = "".join(
