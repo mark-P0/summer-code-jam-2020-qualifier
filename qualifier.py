@@ -39,7 +39,9 @@ class Article:
         self.title = title
         self.author = author
         self.publication_date = publication_date
-        self.content = content
+        self.__content = content
+
+        self.last_edited = None
 
     def __repr__(self):
         title = self.title
@@ -87,3 +89,12 @@ class Article:
     @property
     def id(self):
         return self.__class__._instances.index(self)
+
+    @property
+    def content(self):
+        return self.__content
+
+    @content.setter
+    def content(self, new_content: str):
+        self.__content = new_content
+        self.last_edited = datetime.datetime.now()
