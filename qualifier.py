@@ -73,6 +73,9 @@ class ArticleContent:
 
         super().__init__(**kwargs)
 
+    def __len__(self):
+        return len(self._content)
+
     @property
     def content(self):
         return self._content
@@ -128,9 +131,6 @@ class Article(ArticleID, ArticleContent, ArticlePublicationDate):
         publication_date = self.publication_date_iso
 
         return f"<Article {title=} {author=} {publication_date=}>"
-
-    def __len__(self):
-        return len(self.content)
 
     def __hash__(self):
         title = self.title
