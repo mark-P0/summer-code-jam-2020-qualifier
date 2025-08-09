@@ -136,16 +136,6 @@ class Article(ArticleRepresentation, ArticleContent, ArticleID):
 
     attribute = ArticleField(field_type=int)
 
-    def __init__(
-        self, title: str, author: str, publication_date: datetime.datetime, content: str
-    ):
-        super().__init__(
-            title=title,
-            author=author,
-            publication_date=publication_date,
-            content=content,
-        )
-
     def short_introduction(self, n_characters: int):
         intro = self.content[:n_characters]
 
