@@ -19,18 +19,19 @@ import typing as T
 from string import ascii_lowercase, whitespace
 
 
-TEndKwargs = T.TypeVar("TEndKwargs")
-
-
-class EndKwargsMixin(T.Generic[TEndKwargs]):
+class EndMRO:
     """
-    Empty "mixin" that removes `kwargs` from the inheritance chain
+    Empty "mixin" that removes arguments from the inheritance chain
+
+    Must be used at the end of inheritance chain that uses shared `kwargs` technique
 
     Needed because at the end of the inheritance chain, it is assumed that all arguments are consumed
+
+    Must not have anything following it in the chain; i.e. the next call should be `object.__init__()`
     """
 
-    def __init__(self, **kwargs: TEndKwargs):
-        super().__init__()  # Remove `kwargs` from chain
+    def __init__(self, *_, **__):
+        super().__init__()  # Remove all unused args
 
 
 class ArticleKwargs(T.TypedDict):
@@ -201,7 +202,7 @@ class Article(
     ArticleRepresentation,
     ArticleIntroduction,
     ArticleID,
-    EndKwargsMixin[ArticleKwargs],
+    EndMRO,
 ):
     """
     The `Article` class you need to write for the qualifier.
