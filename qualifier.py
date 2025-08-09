@@ -13,6 +13,7 @@ Important notes for submission:
   remove all debug prints and other debug statements before you submit your
   solution.
 """
+
 import datetime
 import typing
 
@@ -27,5 +28,10 @@ class ArticleField:
 class Article:
     """The `Article` class you need to write for the qualifier."""
 
-    def __init__(self, title: str, author: str, publication_date: datetime.datetime, content: str):
-        pass
+    def __init__(
+        self, title: str, author: str, publication_date: datetime.datetime, content: str
+    ):
+        self.title = title
+        self.author = author
+        self.publication_date = publication_date
+        self.content = content
