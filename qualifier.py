@@ -19,6 +19,15 @@ import typing
 from string import ascii_lowercase, whitespace
 
 
+class END:
+    """
+    Empty "mixin" that removes `kwargs` from the inheritance chain
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__()  # Remove `kwargs` from chain
+
+
 class ArticleField:
     """The `ArticleField` class for the Advanced Requirements."""
 
@@ -56,10 +65,10 @@ class ArticleField:
 class ArticleID:
     _instances = []
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, **kwargs):
         self.__class__._instances.append(self)
 
-        super().__init__(*args, **kwargs)
+        super().__init__(**kwargs)
 
     @property
     def id(self):
@@ -67,8 +76,8 @@ class ArticleID:
 
 
 class ArticleContent:
-    def __init__(self, content: str, **kwargs):
-        self._content = content
+    def __init__(self, **kwargs):
+        self._content = kwargs["content"]
         self.last_edited = None
 
         super().__init__(**kwargs)
@@ -87,8 +96,8 @@ class ArticleContent:
 
 
 class ArticlePublicationDate:
-    def __init__(self, publication_date: datetime.datetime, **kwargs):
-        self.publication_date = publication_date
+    def __init__(self, **kwargs):
+        self.publication_date = kwargs["publication_date"]
 
         super().__init__(**kwargs)
 
@@ -110,9 +119,9 @@ class ArticlePublicationDate:
 
 
 class ArticleRepresentation(ArticlePublicationDate):
-    def __init__(self, title: str, author: str, **kwargs):
-        self.title = title
-        self.author = author
+    def __init__(self, **kwargs):
+        self.title = kwargs["title"]
+        self.author = kwargs["author"]
 
         super().__init__(**kwargs)
 
@@ -169,10 +178,7 @@ class ArticleCommonWords(ArticleContent):
 
 
 class Article(
-    ArticleCommonWords,
-    ArticleRepresentation,
-    ArticleIntroduction,
-    ArticleID,
+    ArticleCommonWords, ArticleRepresentation, ArticleIntroduction, ArticleID, END
 ):
     """The `Article` class you need to write for the qualifier."""
 
