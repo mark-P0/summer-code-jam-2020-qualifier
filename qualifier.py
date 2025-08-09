@@ -133,6 +133,13 @@ class ArticleRepresentation(ArticlePublicationDate):
         return f"<Article {title=} {author=} {publication_date=}>"
 
     def __hash__(self):
+        """
+        https://docs.python.org/3/reference/datamodel.html#object.__hash__
+        - Implies that `__hash__` should only be defined if `__eq__` is defined
+
+        This is used for associating classes with attribute names in descriptors (e.g. `ArticleField`)
+        """
+
         title = self.title
         author = self.author
         publication_date = self.publication_date_iso
