@@ -26,6 +26,21 @@ class ArticleField:
         pass
 
 
+class ArticleContent:
+    def __init__(self, *, content: str):
+        self._content = content
+        self.last_edited = None
+
+    @property
+    def content(self):
+        return self._content
+
+    @content.setter
+    def content(self, new_content: str):
+        self._content = new_content
+        self.last_edited = datetime.datetime.now()
+
+
 class ArticlePublicationDate:
     def __init__(self, *, publication_date=datetime.datetime):
         self.publication_date = publication_date
@@ -49,7 +64,7 @@ class ArticlePublicationDate:
         return self.publication_date >= other.publication_date
 
 
-class Article(ArticlePublicationDate):
+class Article(ArticleContent, ArticlePublicationDate):
     """The `Article` class you need to write for the qualifier."""
 
     _instances = []
@@ -62,9 +77,7 @@ class Article(ArticlePublicationDate):
         self.title = title
         self.author = author
         self.publication_date = publication_date
-        self.__content = content
-
-        self.last_edited = None
+        self._content = content
 
     def __repr__(self):
         title = self.title
@@ -112,12 +125,3 @@ class Article(ArticlePublicationDate):
     @property
     def id(self):
         return self.__class__._instances.index(self)
-
-    @property
-    def content(self):
-        return self.__content
-
-    @content.setter
-    def content(self, new_content: str):
-        self.__content = new_content
-        self.last_edited = datetime.datetime.now()
