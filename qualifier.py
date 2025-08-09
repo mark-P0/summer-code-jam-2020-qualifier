@@ -29,9 +29,13 @@ class ArticleField:
 class Article:
     """The `Article` class you need to write for the qualifier."""
 
+    _instances = []
+
     def __init__(
         self, title: str, author: str, publication_date: datetime.datetime, content: str
     ):
+        self.__class__._instances.append(self)
+
         self.title = title
         self.author = author
         self.publication_date = publication_date
@@ -79,3 +83,7 @@ class Article:
         sliced_ct = sorted_ct[:n_words]
 
         return dict(sliced_ct)
+
+    @property
+    def id(self):
+        return self.__class__._instances.index(self)
