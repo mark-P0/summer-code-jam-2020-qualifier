@@ -42,3 +42,6 @@ class Article:
         publication_date = datetime.datetime.isoformat(self.publication_date)
 
         return f"<Article {title=} {author=} {publication_date=}>"
+
+    def __len__(self):
+        return len(self.content)
