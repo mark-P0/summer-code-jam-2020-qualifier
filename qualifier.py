@@ -24,16 +24,19 @@ class ArticleField:
 
     def __init__(self, field_type: typing.Type[typing.Any]):
         self.field_type = field_type
-        self._value = None
+
+        self._instances = {}
 
     def __get__(self, instance, owner):
-        return self._value
+        value = self._instances.get(instance, None)
+
+        return value
 
     def __set__(self, instance, value):
         if not isinstance(value, self.field_type):
             raise TypeError(f"Expected type is {self.field_type}; got {type(value)}")
 
-        self._value = value
+        self._instances[instance] = value
 
 
 class ArticleID:
@@ -78,12 +81,6 @@ class ArticlePublicationDate:
     def __le__(self, other):
         return self.publication_date <= other.publication_date
 
-    def __eq__(self, other):
-        return self.publication_date == other.publication_date
-
-    def __ne__(self, other):
-        return self.publication_date != other.publication_date
-
     def __gt__(self, other):
         return self.publication_date > other.publication_date
 
@@ -98,7 +95,7 @@ class ArticlePublicationDate:
 class Article(ArticleID, ArticleContent, ArticlePublicationDate):
     """The `Article` class you need to write for the qualifier."""
 
-    title = ArticleField(field_type=str)
+    attribute = ArticleField(field_type=int)
 
     def __init__(
         self, title: str, author: str, publication_date: datetime.datetime, content: str
@@ -120,6 +117,13 @@ class Article(ArticleID, ArticleContent, ArticlePublicationDate):
 
     def __len__(self):
         return len(self.content)
+
+    def __hash__(self):
+        title = self.title
+        author = self.author
+        publication_date = self.publication_date_iso
+
+        return hash((title, author, publication_date))
 
     def short_introduction(self, n_characters: int):
         intro = self.content[:n_characters]
